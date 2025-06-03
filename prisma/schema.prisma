@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int                  @id @default(autoincrement())
+  email               String               @unique
+  name                String
+  passwordHash        String               @map("password_hash")
+  isEmailVerified     Boolean              @default(false) @map("is_email_verified")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @default(now()) @updatedAt @map("updated_at")
+  mentalHealthMetrics MentalHealthMetric[]
+  forumPosts          ForumPost[]
+  forumComments       ForumComment[]
+  preferences         UserPreference?
+  gardenElements      GardenElement[]
+
+  @@map("users")
+}
+
+model MentalHealthMetric {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  metricDate   DateTime @map("metric_date")
+  mood         Int
+  anxietyLevel Int?     @map("anxiety_level")
+  stressLevel  Int?     @map("stress_level")
+  notes        String?  @db.Text
+  activities   Json?    @default("[]")
+  createdAt    DateTime @default(now()) @map("created_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("mental_health_metrics")
+}
+
+model ForumCategory {
+  id    Int         @id @default(autoincrement())
+  name  String      @unique
+  posts ForumPost[]
+
+  @@map("forum_categories")
+}
+
+model ForumPost {
+  id          Int            @id @default(autoincrement())
+  userId      Int?           @map("user_id")
+  categoryId  Int?           @map("category_id")
+  title       String
+  content     String         @db.Text
+  isAnonymous Boolean        @default(true) @map("is_anonymous")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at")
+  user        User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  category    ForumCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments    ForumComment[]
+
+  @@map("forum_posts")
+}
+
+model ForumComment {
+  id          Int       @id @default(autoincrement())
+  postId      Int       @map("post_id")
+  userId      Int?      @map("user_id")
+  content     String    @db.Text
+  isAnonymous Boolean   @default(true) @map("is_anonymous")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  post        ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("forum_comments")
+}
+
+model Resource {
+  id        Int      @id @default(autoincrement())
+  title     String
+  type      String?
+  content   String?  @db.Text
+  url       String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("resources")
+}
+
+model UserPreference {
+  id                      Int      @id @default(autoincrement())
+  userId                  Int      @unique @map("user_id")
+  privacySetting          String   @default("public") @map("privacy_setting")
+  notificationPreferences Json?    @map("notification_preferences")
+  languagePreference      String   @default("en") @map("language_preference")
+  accessibilityOptions    Json?    @map("accessibility_options")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @default(now()) @updatedAt @map("updated_at")
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+enum GardenElementType {
+  plant
+  tree
+  flower
+}
+
+enum HealthStatus {
+  healthy
+  needs_attention @map("needs-attention")
+  wilting
+}
+
+model GardenElement {
+  id              Int               @id @default(autoincrement())
+  userId          Int               @map("user_id")
+  type            GardenElementType
+  name            String
+  description     String?           @db.Text
+  plantedDate     DateTime          @default(now()) @map("planted_date")
+  lastWateredDate DateTime          @default(now()) @map("last_watered_date")
+  growthStage     Int               @default(1) @map("growth_stage")
+  healthStatus    HealthStatus      @default(healthy) @map("health_status")
+  positionX       Int               @map("position_x")
+  positionY       Int               @map("position_y")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("garden_elements")
+}
