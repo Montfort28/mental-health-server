@@ -1,4 +1,18 @@
+import { Prisma } from '@prisma/client';
+
 export interface MentalHealthMetric {
+  id: number;
+  userId: number;
+  metricDate: Date;
+  mood: number;
+  anxietyLevel: number | null;
+  stressLevel: number | null;
+  notes: string | null;
+  activities: string | null;
+  createdAt: Date;
+}
+
+export interface MentalHealthMetricProcessed {
   id: number;
   userId: number;
   metricDate: Date;
@@ -6,7 +20,7 @@ export interface MentalHealthMetric {
   anxietyLevel?: number;
   stressLevel?: number;
   notes?: string;
-  activities?: string[];
+  activities: string[];
   createdAt: Date;
 }
 
@@ -22,4 +36,16 @@ export interface MoodTrend {
   averageMood: number;
   averageAnxiety?: number;
   averageStress?: number;
+}
+
+export interface PrismaMentalHealthMetric {
+  id: number;
+  userId: number;
+  metricDate: Date;
+  mood: number;
+  anxietyLevel: number | null;
+  stressLevel: number | null;
+  notes: string | null;
+  activities: Prisma.JsonValue;
+  createdAt: Date;
 }

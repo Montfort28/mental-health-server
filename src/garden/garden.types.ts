@@ -12,6 +12,8 @@ export interface GardenElement {
   positionY: number;
   createdAt: Date;
   updatedAt: Date;
+  moodHistory?: number[];
+  activityHistory?: string[];
 }
 
 export interface CreateGardenElementDto {
@@ -28,9 +30,11 @@ export interface UpdateGardenElementDto {
   name?: string;
   description?: string;
   growthStage?: number;
-  healthStatus?: 'healthy' | 'needs-attention' | 'wilting';
+  healthStatus?: 'healthy' | 'needs_attention' | 'wilting';
   position?: {
     x: number;
     y: number;
   };
+  moodHistory?: number[];
+  activityHistory?: string[];
 }
