@@ -12,24 +12,24 @@ const mentalHealthController = new MentalHealthController(mentalHealthService);
 
 // Get user's mental health metrics
 router.get(
-  '/metrics',
-  authenticateJWT,
-  (req, res) => mentalHealthController.getUserMetrics(req, res)
+    '/metrics',
+    authenticateJWT,
+    (req, res) => mentalHealthController.getUserMetrics(req, res)
 );
 
 // Add new mental health metric
 router.post(
-  '/metrics',
-  authenticateJWT,
-  validate(mentalHealthMetricSchema),
-  (req, res) => mentalHealthController.addMetric(req, res)
+    '/metrics',
+    authenticateJWT,
+    validate(mentalHealthMetricSchema),
+    (req, res) => mentalHealthController.addMetric(req, res)
 );
 
 // Get mood trends
 router.get(
-  '/trends',
-  authenticateJWT,
-  (req, res) => mentalHealthController.getMoodTrends(req, res)
+    '/trends',
+    authenticateJWT,
+    (req, res) => mentalHealthController.getMoodTrends(req, res)
 );
 
 export default router;

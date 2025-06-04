@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { 
-  register, 
-  login, 
-  verifyEmail, 
-  requestPasswordReset, 
-  resetPassword,
-  getCurrentUser 
+import {
+    register,
+    login,
+    verifyEmail,
+    requestPasswordReset,
+    resetPassword,
+    getCurrentUser
 } from './auth.controller';
 import { authenticateJWT } from './auth.middleware';
 

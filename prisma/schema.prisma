@@ -20,6 +20,7 @@ model User {
   forumComments       ForumComment[]
   preferences         UserPreference?
   gardenElements      GardenElement[]
+  breathingSessions   BreathingSession[]
 
   @@map("users")
 }
@@ -99,6 +100,21 @@ model UserPreference {
   user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_preferences")
+}
+
+model BreathingSession {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  pattern     String
+  duration    Int // Duration in seconds
+  completed   Boolean  @default(false)
+  cycles      Int      @default(0)
+  stressLevel Int?     @map("stress_level")
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("breathing_sessions")
 }
 
 enum GardenElementType {

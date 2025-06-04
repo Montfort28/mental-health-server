@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { router as authRoutes } from './auth/auth.routes';
+import breathingRoutes from './mentalHealth/breathing.routes';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/breathing', breathingRoutes);
 
 app.get('/', (_req, res) => {
   res.send('Safe Haven API is running');

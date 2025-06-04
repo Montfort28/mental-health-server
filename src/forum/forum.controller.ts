@@ -5,95 +5,95 @@ import * as forumService from './forum.service';
 import prisma from '../lib/prisma';
 
 export class ForumController {
-  async getPosts(req: Request, res: Response) {
-    try {
-      const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
-      
-      if (categoryId && isNaN(categoryId)) {
-        return res.status(400).json({ error: 'Invalid category ID' });
-      }
+    async getPosts(req: Request, res: Response) {
+        try {
+            const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
 
-      const posts = await forumService.getPosts(categoryId);
-      return res.json(posts);
-    } catch (error) {
-      console.error('Error fetching forum posts:', error);
-      return res.status(500).json({ error: 'Failed to fetch forum posts' });
+            if (categoryId && isNaN(categoryId)) {
+                return res.status(400).json({ error: 'Invalid category ID' });
+            }
+
+            const posts = await forumService.getPosts(categoryId);
+            return res.json(posts);
+        } catch (error) {
+            console.error('Error fetching forum posts:', error);
+            return res.status(500).json({ error: 'Failed to fetch forum posts' });
+        }
     }
-  }
 
-  async createPost(req: AuthRequest, res: Response) {
-    try {
-      const userId = req.user?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: 'User not authenticated' });
-      }
+    async createPost(req: AuthRequest, res: Response) {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                return res.status(401).json({ error: 'User not authenticated' });
+            }
 
-      const { title, content, isAnonymous = true, categoryId } = req.body;
+            const { title, content, isAnonymous = true, categoryId } = req.body;
 
-      if (!title || !content) {
-        return res.status(400).json({ error: 'Title and content are required' });
-      }
+            if (!title || !content) {
+                return res.status(400).json({ error: 'Title and content are required' });
+            }
 
-      if (categoryId && isNaN(parseInt(categoryId))) {
-        return res.status(400).json({ error: 'Invalid category ID' });
-      }
+            if (categoryId && isNaN(parseInt(categoryId))) {
+                return res.status(400).json({ error: 'Invalid category ID' });
+            }
 
-      const createPostDto = {
-        title,
-        content,
-        isAnonymous,
-        categoryId: categoryId ? parseInt(categoryId) : undefined
-      };
+            const createPostDto = {
+                title,
+                content,
+                isAnonymous,
+                categoryId: categoryId ? parseInt(categoryId) : undefined
+            };
 
-      const post = await forumService.createPost(userId, createPostDto);
-      return res.status(201).json(post);
-    } catch (error) {
-      console.error('Error creating forum post:', error);
-      return res.status(500).json({ error: 'Failed to create forum post' });
+            const post = await forumService.createPost(userId, createPostDto);
+            return res.status(201).json(post);
+        } catch (error) {
+            console.error('Error creating forum post:', error);
+            return res.status(500).json({ error: 'Failed to create forum post' });
+        }
     }
-  }
 
-  async addComment(req: AuthRequest, res: Response) {
-    try {
-      const userId = req.user?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: 'User not authenticated' });
-      }
+    async addComment(req: AuthRequest, res: Response) {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                return res.status(401).json({ error: 'User not authenticated' });
+            }
 
-      const { postId } = req.params;
-      const postIdNum = parseInt(postId);
-      
-      if (isNaN(postIdNum)) {
-        return res.status(400).json({ error: 'Invalid post ID' });
-      }
+            const { postId } = req.params;
+            const postIdNum = parseInt(postId);
 
-      const { content, isAnonymous = true } = req.body;
+            if (isNaN(postIdNum)) {
+                return res.status(400).json({ error: 'Invalid post ID' });
+            }
 
-      if (!content) {
-        return res.status(400).json({ error: 'Content is required' });
-      }
+            const { content, isAnonymous = true } = req.body;
 
-      const createCommentDto = {
-        content,
-        isAnonymous
-      };
+            if (!content) {
+                return res.status(400).json({ error: 'Content is required' });
+            }
 
-      const comment = await forumService.addComment(userId, postIdNum, createCommentDto);
-      return res.status(201).json(comment);
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      return res.status(500).json({ error: 'Failed to add comment' });
+            const createCommentDto = {
+                content,
+                isAnonymous
+            };
+
+            const comment = await forumService.addComment(userId, postIdNum, createCommentDto);
+            return res.status(201).json(comment);
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            return res.status(500).json({ error: 'Failed to add comment' });
+        }
     }
-  }
-  async getCategories(_req: Request, res: Response) {
-    try {
-      const categories = await prisma.forumCategory.findMany({
-        orderBy: { name: 'asc' }
-      });
-      return res.json(categories);
-    } catch (error) {
-      console.error('Error fetching forum categories:', error);
-      return res.status(500).json({ error: 'Failed to fetch forum categories' });
+    async getCategories(_req: Request, res: Response) {
+        try {
+            const categories = await prisma.forumCategory.findMany({
+                orderBy: { name: 'asc' }
+            });
+            return res.json(categories);
+        } catch (error) {
+            console.error('Error fetching forum categories:', error);
+            return res.status(500).json({ error: 'Failed to fetch forum categories' });
+        }
     }
-  }
 }
